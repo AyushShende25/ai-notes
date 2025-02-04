@@ -7,6 +7,8 @@ const envSchema = z.object({
 	NODE_ENV: z.enum(["development", "production"]).default("development"),
 	DATABASE_URL: z.string(),
 	CLIENT_URL: z.string(),
+	JWT_SECRET: z.string(),
+	JWT_ACCESS_TOKEN_TTL: z.coerce.number(),
 });
 
 const envVars = envSchema.safeParse(process.env);

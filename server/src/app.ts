@@ -9,7 +9,8 @@ import express, {
 import { NotFoundError } from "@/errors";
 import { errorHandler } from "@/middleware/errorHandler.middleware";
 import morganMiddleware from "@/middleware/morgan.middleware";
-import { env } from "./config/env";
+import authRouter from "@/modules/auth/auth.router";
+import { env } from "@/config/env";
 
 const app: Application = express();
 
@@ -23,6 +24,8 @@ app
 			ok: true,
 		});
 	});
+
+app.use("/api/auth", authRouter);
 
 app
 	.all("*splat", () => {

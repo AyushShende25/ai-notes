@@ -35,10 +35,12 @@ export const loginService = async (loginInput: LoginInput) => {
 		throw new UnAuthorizedError("Invalid Credentials");
 	}
 
-	const isPasswordValid = Bun.password.verify(
+	const isPasswordValid = await Bun.password.verify(
 		loginInput.password,
 		user.password,
 	);
+	console.log(isPasswordValid);
+	
 	if (!isPasswordValid) {
 		throw new UnAuthorizedError("Invalid credentials");
 	}

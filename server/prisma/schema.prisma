@@ -14,4 +14,16 @@ model User {
   username   String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  notes      Note[]
+}
+
+model Note {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  isFavourite Boolean  @default(false)
+  authorId    String   @db.ObjectId
+  author      User     @relation(fields: [authorId], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }

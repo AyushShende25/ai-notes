@@ -4,8 +4,9 @@ import prisma from "@/config/db";
 import { env } from "@/config/env";
 import { BadRequestError, UnAuthorizedError } from "@/errors";
 import type { LoginInput, SignupInput } from "@/modules/auth/auth.schema";
-import type { User } from "@prisma/client";
 import type { ActiveUserData } from "@/modules/auth/auth.types";
+import { findUserbyEmail } from "@/modules/users/user.service";
+import type { User } from "@prisma/client";
 
 export const signupService = async (signupInput: SignupInput) => {
 	const existingUser = await findUserbyEmail(signupInput.email);
@@ -28,20 +29,23 @@ export const signupService = async (signupInput: SignupInput) => {
 };
 
 export const loginService = async (loginInput: LoginInput) => {
-  const user = await findUserbyEmail(loginInput.email);
+	const user = await findUserbyEmail(loginInput.email);
 
-  if (!user) {
-    throw new UnAuthorizedError("Invalid Credentials");
-  }
+	if (!user) {
+		throw new UnAuthorizedError("Invalid Credentials");
+	}
 
-  const isPasswordValid = Bun.password.verify(loginInput.password, user.password);
-  if (!isPasswordValid) {
-    throw new UnAuthorizedError("Invalid credentials");
-  }
+	const isPasswordValid = Bun.password.verify(
+		loginInput.password,
+		user.password,
+	);
+	if (!isPasswordValid) {
+		throw new UnAuthorizedError("Invalid credentials");
+	}
 
-  const { access_token } = await generateToken(user);
+	const { access_token } = await generateToken(user);
 
-  return { access_token };
+	return { access_token };
 };
 
 const generateToken = async (user: Omit<User, "password">) => {
@@ -67,16 +71,4 @@ const signToken = async <T>(userId: string, expiresIn: number, payload?: T) => {
 			expiresIn,
 		},
 	);
-};
-
-const findUserbyEmail = async (email: string) => {
-	return prisma.user.findUnique({
-		where: { email },
-	});
-};
-
-export const findUserbyId = async (id: string) => {
-	return prisma.user.findUnique({
-		where: { id },
-	});
 };

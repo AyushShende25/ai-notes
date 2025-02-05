@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 
 import { env } from "@/config/env";
 import { UnAuthorizedError } from "@/errors";
-import { findUserbyId } from "@/modules/auth/auth.service";
 import type { ActiveUserData } from "@/modules/auth/auth.types";
+import { findUserByIdService } from "@/modules/users/user.service";
 
 declare global {
 	namespace Express {
@@ -18,7 +18,7 @@ export const Authenticate = async (
 	req: Request,
 	_res: Response,
 	next: NextFunction,
-) => {  
+) => {
 	const accessToken =
 		req.cookies?.access_token || req.headers.authorization?.split(" ")[1];
 
@@ -33,7 +33,7 @@ export const Authenticate = async (
 		throw new UnAuthorizedError("Invalid token or user does not exist");
 	}
 
-	const user = await findUserbyId(decoded.sub);
+	const user = await findUserByIdService(decoded.sub);
 
 	if (!user) {
 		throw new UnAuthorizedError("Invalid token or user does not exist");

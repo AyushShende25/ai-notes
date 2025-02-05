@@ -6,11 +6,13 @@ import express, {
 	type Request,
 } from "express";
 
+import { env } from "@/config/env";
 import { NotFoundError } from "@/errors";
 import { errorHandler } from "@/middleware/errorHandler.middleware";
 import morganMiddleware from "@/middleware/morgan.middleware";
 import authRouter from "@/modules/auth/auth.router";
-import { env } from "@/config/env";
+import notesRouter from "@/modules/notes/note.router";
+import usersRouter from "@/modules/users/user.router";
 
 const app: Application = express();
 
@@ -26,6 +28,8 @@ app
 	});
 
 app.use("/api/auth", authRouter);
+app.use("/api/notes", notesRouter);
+app.use("/api/users", usersRouter);
 
 app
 	.all("*splat", () => {
